@@ -37,11 +37,9 @@ public class CustomerController {
             int randomNum = (int) (Math.random() * 9999) + 1;
             fileName = "customerDataFile_" + randomNum + ".csv";
         }
-        System.out.println("FileName : " + fileName);
         File filLocation = new ClassPathResource("customerData/").getFile();
         Path path = Paths.get(filLocation.getAbsolutePath() + File.separator + fileName);
         Files.copy(multipartFile.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-        System.out.println("File uploaded to : " + path.toString());
         customerService.triggerCustomerValidationJob(fileName);
         return ResponseEntity.ok().body("Job started");
     }

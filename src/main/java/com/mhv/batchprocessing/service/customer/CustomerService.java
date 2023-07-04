@@ -19,9 +19,6 @@ public class CustomerService {
     @Autowired
     private JobLauncher jobLauncher;
 
-//    @Autowired
-//    private ExecutionContext executionContext;
-
     @Autowired
     @Qualifier(value = "customerValidatorJobBean")
     private Job customerValidatorJob;
@@ -30,8 +27,6 @@ public class CustomerService {
         JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
         jobParametersBuilder.addLocalDateTime("startTime", LocalDateTime.now());
         jobParametersBuilder.addString("fileName", fileName);
-//        if(executionContext.containsKey("fileName")) executionContext.remove("fileName");
-//        executionContext.putString("fileName", fileName);
         JobParameters jobParameters = jobParametersBuilder.toJobParameters();
         JobExecution jobExecution = jobLauncher.run(customerValidatorJob, jobParameters);
         while (jobExecution.isRunning()){}

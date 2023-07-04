@@ -1,6 +1,7 @@
 package com.mhv.batchprocessing.jobDefinition.customerValidateTransformAndLoad.step;
 
 import com.mhv.batchprocessing.entity.Customer;
+import com.mhv.batchprocessing.jobDefinition.customerValidateTransformAndLoad.listener.CsvProcessStepListener;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -35,6 +36,12 @@ public class CustomerCsvProcessorStep {
                 .reader(itemReader)
                 .processor(itemProcessor)
                 .writer(itemWriter)
+//                .listener(getCsvProcessStepListener())
                 .build();
+    }
+
+    @Bean
+    public CsvProcessStepListener getCsvProcessStepListener(){
+        return new CsvProcessStepListener();
     }
 }

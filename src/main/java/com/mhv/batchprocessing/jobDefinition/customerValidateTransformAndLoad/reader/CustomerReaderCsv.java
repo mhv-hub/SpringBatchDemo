@@ -1,7 +1,6 @@
 package com.mhv.batchprocessing.jobDefinition.customerValidateTransformAndLoad.reader;
 
 import com.mhv.batchprocessing.entity.Customer;
-import org.springframework.batch.core.annotation.AfterStep;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.*;
 import org.springframework.batch.item.file.FlatFileItemReader;
@@ -9,7 +8,6 @@ import org.springframework.batch.item.file.LineMapper;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.convert.ConversionService;
@@ -18,25 +16,11 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Component
 public class CustomerReaderCsv implements ItemReader<Customer> {
-
-    @Autowired
-    private ExecutionContext executionContext;
-//    private String fileName;
-
-//    @BeforeStep
-//    public void getFileName(){
-//        fileName = executionContext.getString("fileName");
-//    }
 
     @Bean(name = "customerCsvFileReader")
     @StepScope
@@ -77,14 +61,6 @@ public class CustomerReaderCsv implements ItemReader<Customer> {
             }
         });
         return conversionService;
-    }
-
-    @AfterStep
-    public void deleteCsvFile() throws IOException {
-        String fileName = executionContext.getString("fileName");
-        File fileLocation = new ClassPathResource("customerData/" + fileName).getFile();
-        Path path = Paths.get(fileLocation.getAbsolutePath() + File.separator + fileName);
-        Files.delete(path);
     }
 
     @Override
