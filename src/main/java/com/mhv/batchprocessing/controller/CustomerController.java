@@ -1,7 +1,7 @@
 package com.mhv.batchprocessing.controller;
 
 import com.mhv.batchprocessing.exceptionHandeller.CustomException;
-import com.mhv.batchprocessing.service.kafka.customer.CustomerService;
+import com.mhv.batchprocessing.service.customer.CustomerService;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;

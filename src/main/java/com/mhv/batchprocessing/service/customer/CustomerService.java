@@ -1,4 +1,4 @@
-package com.mhv.batchprocessing.service.kafka.customer;
+package com.mhv.batchprocessing.service.customer;
 
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.launch.JobLauncher;
