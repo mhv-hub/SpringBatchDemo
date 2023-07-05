@@ -12,8 +12,16 @@ public class KafkaTopicConfig {
     @Value("${kafka.csv.topic.customer}")
     private String customerDataTopic;
 
+    @Value("${kafka.csv.topic.customer_ctl}")
+    private String customerCtlTopic;
+
     @Bean
-    public NewTopic newItemTopic(){
+    public NewTopic createCustomerDataTopic(){
         return TopicBuilder.name(customerDataTopic).build();
+    }
+
+    @Bean
+    public NewTopic createCustomerCtlTopic(){
+        return TopicBuilder.name(customerCtlTopic).build();
     }
 }

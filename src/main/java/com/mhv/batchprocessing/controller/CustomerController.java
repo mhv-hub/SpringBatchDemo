@@ -32,7 +32,7 @@ public class CustomerController {
         }
         String fileName = multipartFile.getOriginalFilename();
         if(!fileName.endsWith(".csv")){
-            throw new CustomException("Only CSV file is supported. Please upload a valid file");
+            throw new CustomException("Please upload a valid CSV file");
         }else{
             int randomNum = (int) (Math.random() * 9999) + 1;
             fileName = "customerDataFile_" + randomNum + ".csv";

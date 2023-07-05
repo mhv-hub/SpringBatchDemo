@@ -8,6 +8,7 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.time.LocalDateTime;
 
@@ -21,6 +22,10 @@ public class CustomerService {
     @Qualifier(value = "customerValidatorJobBean")
     private Job customerValidatorJob;
 
+    @Autowired
+    @Qualifier(value = "customerTransformAndLoadJobBean")
+    private Job customerTransformationAndLoadJob;
+
     public void triggerCustomerValidationJob(String fileName) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
         jobParametersBuilder.addLocalDateTime("startTime", LocalDateTime.now());
@@ -28,6 +33,15 @@ public class CustomerService {
         JobParameters jobParameters = jobParametersBuilder.toJobParameters();
         JobExecution jobExecution = jobLauncher.run(customerValidatorJob, jobParameters);
         while (jobExecution.isRunning()){}
-        System.out.println("Job Status : [ " + jobExecution.getStatus() + " ]");
+        System.out.println("Validation Job Status : [ " + jobExecution.getStatus() + " ]");
+    }
+
+    public void triggerCustomerTransformationAndLoadJob() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+        JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
+        jobParametersBuilder.addLocalDateTime("startTime", LocalDateTime.now());
+        JobParameters jobParameters = jobParametersBuilder.toJobParameters();
+        JobExecution jobExecution = jobLauncher.run(customerTransformationAndLoadJob, jobParameters);
+        while (jobExecution.isRunning()){}
+        System.out.println("Transformation and Load Job Status : [ " + jobExecution.getStatus() + " ]");
     }
 }

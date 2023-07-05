@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 @Component
@@ -19,11 +20,17 @@ public class CustomerWriterKafka implements ItemWriter<Customer> {
     private KafkaProducerService kafkaProducerService;
 
     @Value("${kafka.csv.topic.customer}")
-    private String topic;
+    private String customerDataTopic;
+
+    @Value("${kafka.csv.topic.customer_ctl}")
+    private String customerCtlTopic;
 
     @Override
     public void write(Chunk<? extends Customer> customers) throws Exception {
-        Exception exception = kafkaProducerService.pushCustomerToQueue(new ArrayList<>(customers.getItems()), topic);
-        System.out.println(exception == null ? "Customer data published to message queue" : "Issue in pushing to message queue : " + exception.getMessage());
+        Exception exception = null;
+        exception = kafkaProducerService.pushCustomerDataToQueue(new ArrayList<>(customers.getItems()), customerDataTopic);
+        System.out.println(exception == null ? "Customer data published to message queue [ " + LocalTime.now() + " ]" : "Issue in pushing customer data to message queue : [ " + LocalTime.now() + " ]" + exception.getMessage());
+        exception = kafkaProducerService.pushCustomerCtlToQueue(customerCtlTopic);
+        System.out.println(exception == null ? "Customer CTL published to message queue [ " + LocalTime.now() + " ]" : "Issue in pushing customer CTL to message queue : [ " + LocalTime.now() + " ]" + exception.getMessage());
     }
 }
