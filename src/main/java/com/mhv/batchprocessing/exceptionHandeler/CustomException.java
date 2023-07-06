@@ -1,4 +1,4 @@
-package com.mhv.batchprocessing.exceptionHandeller;
+package com.mhv.batchprocessing.exceptionHandeler;
 
 public class CustomException extends Exception{
     public CustomException(String message){

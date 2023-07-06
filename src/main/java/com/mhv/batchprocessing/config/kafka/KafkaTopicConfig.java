@@ -17,11 +17,11 @@ public class KafkaTopicConfig {
 
     @Bean
     public NewTopic createCustomerDataTopic(){
-        return TopicBuilder.name(customerDataTopic).build();
+        return TopicBuilder.name(customerDataTopic).partitions(10).build();
     }
 
     @Bean
     public NewTopic createCustomerCtlTopic(){
-        return TopicBuilder.name(customerCtlTopic).build();
+        return TopicBuilder.name(customerCtlTopic).partitions(10).build();
     }
 }

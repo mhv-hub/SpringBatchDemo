@@ -1,8 +1,8 @@
 package com.mhv.batchprocessing.jobDefinition.customerValidateTransformAndLoad.processor;
 
 import com.mhv.batchprocessing.entity.Customer;
-import com.mhv.batchprocessing.entity.CustomerType;
-import com.mhv.batchprocessing.entity.Location;
+import com.mhv.batchprocessing.util.CustomerType;
+import com.mhv.batchprocessing.util.Location;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -29,6 +29,11 @@ public class CustomerValidationProcessor implements ItemProcessor<Customer, Cust
         }
         if(customer.getActiveStatus() == null || (!customer.getActiveStatus().equals("ACTIVE")) && !customer.getActiveStatus().equals("INACTIVE")){
             System.out.println("Record reject due to invalid active status value [ CUSTOMER : " + customer + " ]");
+            return null;
+        }
+        if(customer.getCustomerDateOfBirth().getYear() == 9999 && customer.getCustomerType().equals(CustomerType.INDIVIDUAL.toString())){
+            customer.setCustomerDateOfBirth(null);
+            System.out.println("Record reject due to missing date of birth value [ CUSTOMER : " + customer + " ]");
             return null;
         }
         return customer;

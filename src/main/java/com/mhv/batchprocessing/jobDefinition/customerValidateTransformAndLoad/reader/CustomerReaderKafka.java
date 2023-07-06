@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
 
 @Component
@@ -38,7 +39,7 @@ public class CustomerReaderKafka implements ItemReader<Customer> {
         config.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         return new KafkaItemReaderBuilder<String, Customer>()
-                .partitions(0)
+                .partitions(List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
                 .partitionOffsets(new HashMap<>())
                 .consumerProperties(config)
                 .name("kafkaItemReader")

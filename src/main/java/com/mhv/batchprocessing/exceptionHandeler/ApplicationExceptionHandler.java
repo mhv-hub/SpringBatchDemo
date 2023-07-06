@@ -1,4 +1,4 @@
-package com.mhv.batchprocessing.exceptionHandeller;
+package com.mhv.batchprocessing.exceptionHandeler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

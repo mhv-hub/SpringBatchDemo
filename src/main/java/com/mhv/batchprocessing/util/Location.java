@@ -1,4 +1,4 @@
-package com.mhv.batchprocessing.entity;
+package com.mhv.batchprocessing.util;
 
 public enum Location {
     USA,

@@ -57,7 +57,7 @@ public class CustomerReaderCsv implements ItemReader<Customer> {
         conversionService.addConverter(new Converter<String, LocalDate>() {
             @Override
             public LocalDate convert(String dateAsString) {
-                return LocalDate.parse(dateAsString, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                return LocalDate.parse(dateAsString.equals("NA") ? "01/01/9999" : dateAsString, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             }
         });
         return conversionService;

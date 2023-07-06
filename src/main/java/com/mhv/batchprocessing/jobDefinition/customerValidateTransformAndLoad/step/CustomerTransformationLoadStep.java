@@ -1,6 +1,7 @@
 package com.mhv.batchprocessing.jobDefinition.customerValidateTransformAndLoad.step;
 
 import com.mhv.batchprocessing.entity.Customer;
+import com.mhv.batchprocessing.entity.TransformedCustomer;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -22,16 +23,16 @@ public class CustomerTransformationLoadStep {
 
     @Autowired
     @Qualifier(value = "customerTransformationProcessorBean")
-    private ItemProcessor<Customer, Customer> itemProcessor;
+    private ItemProcessor<Customer, TransformedCustomer> itemProcessor;
 
     @Autowired
     @Qualifier(value = "customerDataWriterBean")
-    private ItemWriter<Customer> itemWriter;
+    private ItemWriter<TransformedCustomer> itemWriter;
 
     @Bean(name = "customerTransformationLoadStepBean")
     public Step getCustomerTransformationLoadStep(JobRepository jobRepository, PlatformTransactionManager transactionManager){
         return new StepBuilder("customer-transform-and-load-step", jobRepository)
-                .<Customer, Customer>chunk(100, transactionManager)
+                .<Customer, TransformedCustomer>chunk(100, transactionManager)
                 .reader(itemReader)
                 .processor(itemProcessor)
                 .writer(itemWriter)
