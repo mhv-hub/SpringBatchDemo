@@ -1,6 +1,6 @@
 package com.mhv.batchprocessing.service.kafka;
 
-import com.mhv.batchprocessing.service.customer.CustomerService;
+import com.mhv.batchprocessing.service.customer.CustomerJobService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 public class KafkaConsumerService {
 
     @Autowired
-    private CustomerService customerService;
+    private CustomerJobService customerJobService;
 
     @KafkaListener(id = "customerCtlListener", topics = "${kafka.csv.topic.customer_ctl}", containerFactory = "kafkaCustomerCtlListenerContainerFactoryBean", groupId = ("${kafka.customer.ctl.group.id}"))
     public void consume(String data) {
         System.out.println("********* " + data);
         try {
-            customerService.triggerCustomerTransformationAndLoadJob();
+            customerJobService.triggerCustomerTransformationAndLoadJob();
         }catch (Exception e){
             System.out.println("Exception in starting transformation-load job : " + e.getMessage());
         }

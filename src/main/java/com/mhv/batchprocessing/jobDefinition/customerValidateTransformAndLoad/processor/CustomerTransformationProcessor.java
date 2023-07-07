@@ -2,7 +2,9 @@ package com.mhv.batchprocessing.jobDefinition.customerValidateTransformAndLoad.p
 
 import com.mhv.batchprocessing.entity.Customer;
 import com.mhv.batchprocessing.entity.TransformedCustomer;
+import com.mhv.batchprocessing.service.customer.CustomerTransformationService;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -10,14 +12,15 @@ import org.springframework.stereotype.Component;
 @Qualifier(value = "customerTransformationProcessorBean")
 public class CustomerTransformationProcessor implements ItemProcessor<Customer, TransformedCustomer> {
 
+    @Autowired
+    private CustomerTransformationService customerTransformationService;
+
     @Override
     public TransformedCustomer process(Customer customer) throws Exception {
         TransformedCustomer transformedCustomer = new TransformedCustomer(customer);
-        transformedCustomer
-                .transformCustomerName(customer.getCustomerName())
-                .transformLocation(customer.getLocation())
-                .transformMembershipStatus(customer.getJoiningDate());
-        System.out.println("#### Transformed Customer : " + transformedCustomer);
+        customerTransformationService.transformCustomerName(transformedCustomer, customer.getCustomerName(), customer.getCustomerType());
+        customerTransformationService.transformLocation(transformedCustomer, customer.getLocation());
+        customerTransformationService.transformMembershipStatus(transformedCustomer, customer.getJoiningDate());
         return transformedCustomer;
     }
 }

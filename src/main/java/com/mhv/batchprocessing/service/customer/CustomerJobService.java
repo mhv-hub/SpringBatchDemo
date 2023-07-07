@@ -8,12 +8,11 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import java.time.LocalDateTime;
 
 @Service
-public class CustomerService {
+public class CustomerJobService {
 
     @Autowired
     private JobLauncher jobLauncher;

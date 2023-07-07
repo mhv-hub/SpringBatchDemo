@@ -1,6 +1,7 @@
 package com.mhv.batchprocessing.jobDefinition.customerValidateTransformAndLoad.reader;
 
 import com.mhv.batchprocessing.entity.Customer;
+import org.springframework.batch.core.StepListener;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.*;
 import org.springframework.batch.item.file.FlatFileItemReader;
@@ -20,7 +21,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Component
-public class CustomerReaderCsv implements ItemReader<Customer> {
+public class CustomerReaderCsv {
 
     @Bean(name = "customerCsvFileReader")
     @StepScope
@@ -38,7 +39,7 @@ public class CustomerReaderCsv implements ItemReader<Customer> {
         DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
         lineTokenizer.setDelimiter(",");
         lineTokenizer.setStrict(false);
-        lineTokenizer.setNames("customerName", "customerGender", "customerDateOfBirth", "customerType", "location", "joiningDate", "activeStatus");
+        lineTokenizer.setNames("uniqueId", "customerName", "customerGender", "customerDateOfBirth", "customerType", "location", "joiningDate", "activeStatus");
 
         BeanWrapperFieldSetMapper<Customer> beanWrapperFieldSetMapper = new BeanWrapperFieldSetMapper<>();
         beanWrapperFieldSetMapper.setConversionService(dateConversionService());
@@ -61,10 +62,5 @@ public class CustomerReaderCsv implements ItemReader<Customer> {
             }
         });
         return conversionService;
-    }
-
-    @Override
-    public Customer read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-        return null;
     }
 }

@@ -14,6 +14,7 @@ import java.time.LocalDate;
 public class Customer {
 
     private long id;
+    private String uniqueId;
     private String customerName;
     private String customerGender;
     private LocalDate customerDateOfBirth;

@@ -1,7 +1,7 @@
 package com.mhv.batchprocessing.controller;
 
-import com.mhv.batchprocessing.exceptionHandeler.CustomException;
-import com.mhv.batchprocessing.service.customer.CustomerService;
+import com.mhv.batchprocessing.exceptionHandeler.GeneralException;
+import com.mhv.batchprocessing.service.customer.CustomerJobService;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
@@ -23,16 +23,16 @@ import java.nio.file.*;
 public class CustomerController {
 
     @Autowired
-    private CustomerService customerService;
+    private CustomerJobService customerJobService;
 
     @PostMapping("/api/customer/process-and-load")
-    public ResponseEntity<String> validateInputFileAndTriggerCustomerService(@RequestParam("csv-customer-data") MultipartFile multipartFile) throws IOException, MultipartException, CustomException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+    public ResponseEntity<String> validateInputFileAndTriggerCustomerService(@RequestParam("csv-customer-data") MultipartFile multipartFile) throws IOException, MultipartException, GeneralException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         if(multipartFile == null || multipartFile.getOriginalFilename() == null){
-            throw new CustomException("Invalid or no file provided");
+            throw new GeneralException("Invalid or no file provided");
         }
         String fileName = multipartFile.getOriginalFilename();
         if(!fileName.endsWith(".csv")){
-            throw new CustomException("Please upload a valid CSV file");
+            throw new GeneralException("Please upload a valid CSV file");
         }else{
             int randomNum = (int) (Math.random() * 9999) + 1;
             fileName = "customerDataFile_" + randomNum + ".csv";
@@ -40,7 +40,7 @@ public class CustomerController {
         File filLocation = new ClassPathResource("customerData/").getFile();
         Path path = Paths.get(filLocation.getAbsolutePath() + File.separator + fileName);
         Files.copy(multipartFile.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-        customerService.triggerCustomerValidationJob(fileName);
+        customerJobService.triggerCustomerValidationJob(fileName);
         return ResponseEntity.ok().body("Job started");
     }
 }

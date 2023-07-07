@@ -4,6 +4,7 @@ import com.mhv.batchprocessing.entity.Customer;
 import com.mhv.batchprocessing.util.CustomerJsonDeserializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.ParseException;
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.Properties;
 
 @Component
-public class CustomerReaderKafka implements ItemReader<Customer> {
+public class CustomerReaderKafka {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String kafkaServer;
@@ -31,6 +32,7 @@ public class CustomerReaderKafka implements ItemReader<Customer> {
     private String topic;
 
     @Bean(name = "customerKafkaQueueReaderBean")
+    @StepScope
     public KafkaItemReader<String, Customer> itemReader(){
         Properties config = new Properties();
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
@@ -43,13 +45,7 @@ public class CustomerReaderKafka implements ItemReader<Customer> {
                 .partitionOffsets(new HashMap<>())
                 .consumerProperties(config)
                 .name("kafkaItemReader")
-                .saveState(true)
                 .topic(topic)
                 .build();
-    }
-
-    @Override
-    public Customer read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-        return null;
     }
 }

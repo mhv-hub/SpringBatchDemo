@@ -23,7 +23,10 @@ public class TransformedCustomer {
     @Column(name = "CUSTOMER_ID")
     private long id;
 
-    @Column(name = "FIRST_NAME", length = 25)
+    @Column(name = "UNIQUE_ID", length = 10, unique = true)
+    private String uniqueId;
+
+    @Column(name = "FIRST_NAME", length = 75)
     private String firstName;
 
     @Column(name = "LAST_NAME", length = 25)
@@ -51,34 +54,11 @@ public class TransformedCustomer {
     private String memberShipStatus;
 
     public TransformedCustomer(Customer customer){
+        this.setUniqueId(customer.getUniqueId());
         this.setGender(customer.getCustomerGender());
         this.setDateOfBirth(customer.getCustomerDateOfBirth());
         this.setCategory(customer.getCustomerType());
         this.setJoiningDate(customer.getJoiningDate());
         this.setActiveStatus(customer.getActiveStatus());
-    }
-
-    public TransformedCustomer transformCustomerName(String fullName){
-        String[] nameSplitArray = fullName.split(" ");
-        int wordCount = nameSplitArray.length;
-        this.setFirstName(nameSplitArray[0]);
-        this.setLastName(wordCount > 1 ? nameSplitArray[wordCount - 1] : null);
-        return this;
-    }
-
-    public TransformedCustomer transformLocation(String location){
-        this.setCountry(LocationToCountryMap.countryMap.get(location));
-        return this;
-    }
-
-    public TransformedCustomer transformMembershipStatus(LocalDate joiningDate){
-        int yearDifference = LocalDate.now().getYear() - joiningDate.getYear();
-        this.setMemberShipStatus(
-                yearDifference >= 5 ? MembershipStatus.ULTIMATE.name() :
-                        yearDifference >= 3 ? MembershipStatus.PRIME.name() :
-                                yearDifference == 2 ? MembershipStatus.EXTENDED.name() :
-                                        MembershipStatus.BASIC.name()
-        );
-        return this;
     }
 }
