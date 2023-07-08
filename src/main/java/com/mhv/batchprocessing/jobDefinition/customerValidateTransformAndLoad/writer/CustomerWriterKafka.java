@@ -27,16 +27,11 @@ public class CustomerWriterKafka implements ItemWriter<Customer> {
 
     @Override
     public void write(Chunk<? extends Customer> customers) throws Exception {
-        Exception exception = null;
-        exception = kafkaProducerService.pushCustomerDataToQueue(new ArrayList<>(customers.getItems()), customerDataTopic);
-        if(exception == null){
-            System.out.println("Customer data published to message queue [ " + LocalTime.now() + " ]");
-            exception = kafkaProducerService.pushCustomerCtlToQueue(customerCtlTopic);
-            System.out.println(exception == null ? "Customer CTL published to message queue [ " + LocalTime.now() + " ]" : "Issue in pushing customer CTL to message queue : [ " + LocalTime.now() + " ]" + exception.getMessage());
-        }
-        else {
-            System.out.println("Issue in pushing customer data to message queue : [ " + LocalTime.now() + " ]" + exception.getMessage());
-        }
-
+        Exception exception = kafkaProducerService.pushCustomerDataToQueue(new ArrayList<>(customers.getItems()), customerDataTopic);
+        System.out.println(
+                exception == null ?
+                "Customer data published to message queue [ " + LocalTime.now() + " ]" :
+                "Issue in pushing customer data to message queue : [ " + LocalTime.now() + " ] [ " + exception.getMessage() + " ]"
+        );
     }
 }

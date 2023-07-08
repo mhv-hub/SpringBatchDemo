@@ -22,4 +22,16 @@ public class Customer {
     private String location;
     private LocalDate joiningDate;
     private String activeStatus;
+
+    public StringBuilder toStringCsvFormat(){
+        return new StringBuilder()
+                .append(this.getUniqueId()).append(",")
+                .append(this.getCustomerName()).append(",")
+                .append(this.getCustomerGender()).append(",")
+                .append(this.getCustomerDateOfBirth()).append(",")
+                .append(this.getCustomerType()).append(",")
+                .append(this.getLocation()).append(",")
+                .append(this.getJoiningDate()).append(",")
+                .append(this.getActiveStatus());
+    }
 }

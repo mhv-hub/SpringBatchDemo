@@ -1,5 +1,6 @@
 package com.mhv.batchprocessing.controller;
 
+import com.mhv.batchprocessing.dto.JobStatusResponse;
 import com.mhv.batchprocessing.exceptionHandeler.GeneralException;
 import com.mhv.batchprocessing.service.customer.CustomerJobService;
 import org.springframework.batch.core.JobParametersInvalidException;
@@ -18,6 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @RestController
 public class CustomerController {
@@ -26,7 +29,7 @@ public class CustomerController {
     private CustomerJobService customerJobService;
 
     @PostMapping("/api/customer/process-and-load")
-    public ResponseEntity<String> validateInputFileAndTriggerCustomerService(@RequestParam("csv-customer-data") MultipartFile multipartFile) throws IOException, MultipartException, GeneralException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+    public ResponseEntity<JobStatusResponse> validateInputFileAndTriggerCustomerService(@RequestParam("csv-customer-data") MultipartFile multipartFile) throws IOException, MultipartException, GeneralException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         if(multipartFile == null || multipartFile.getOriginalFilename() == null){
             throw new GeneralException("Invalid or no file provided");
         }
@@ -40,7 +43,7 @@ public class CustomerController {
         File filLocation = new ClassPathResource("customerData/").getFile();
         Path path = Paths.get(filLocation.getAbsolutePath() + File.separator + fileName);
         Files.copy(multipartFile.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-        customerJobService.triggerCustomerValidationJob(fileName);
-        return ResponseEntity.ok().body("Job started");
+        JobStatusResponse jobStatusResponse = customerJobService.triggerCustomerValidationJob(fileName);
+        return ResponseEntity.status(jobStatusResponse.getResponseCode()).body(jobStatusResponse);
     }
 }

@@ -1,6 +1,7 @@
 package com.mhv.batchprocessing.jobDefinition.customerValidateTransformAndLoad.job;
 
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
@@ -21,6 +22,10 @@ public class CustomerValidatorJob {
     @Qualifier(value = "deleteCsvFileStepBean")
     private Step deleteCsvStep;
 
+    @Autowired
+    @Qualifier(value = "csvProcessorJobListenerBean")
+    private JobExecutionListener jobExecutionListener;
+
     @Bean(name = "customerValidatorJobBean")
     public Job getCustomerValidatorJob(JobRepository jobRepository){
         return new JobBuilder("customer-validator-job", jobRepository)
@@ -28,6 +33,7 @@ public class CustomerValidatorJob {
                 .flow(processCsvStep)
                 .next(deleteCsvStep)
                 .end()
+                .listener(jobExecutionListener)
                 .build();
     }
 }

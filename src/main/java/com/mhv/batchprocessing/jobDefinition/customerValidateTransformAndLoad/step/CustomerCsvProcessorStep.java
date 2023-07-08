@@ -47,6 +47,10 @@ public class CustomerCsvProcessorStep {
     @Qualifier(value = "customerKafkaWriteListenerBean")
     private ItemWriteListener<Customer> itemWriteListener;
 
+    @Autowired
+    @Qualifier(value = "validationStepListenerBean")
+    private StepExecutionListener stepExecutionListener;
+
     @Bean(name = "customerCsvProcessorStepBean")
     public Step getCustomerCsvProcessorStep(JobRepository jobRepository, PlatformTransactionManager transactionManager){
         return new StepBuilder("customer-csv-processor", jobRepository)
@@ -66,6 +70,7 @@ public class CustomerCsvProcessorStep {
                 .listener(itemProcessListener)
                 .listener(itemWriteListener)
                 .taskExecutor(taskExecutor)
+                .listener(stepExecutionListener)
                 .build();
     }
 }
