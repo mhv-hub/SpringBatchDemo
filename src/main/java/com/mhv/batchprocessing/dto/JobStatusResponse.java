@@ -13,6 +13,7 @@ import java.util.List;
 @ToString
 public class JobStatusResponse {
 
+    private long jobKey;
     private String startTime;
     private String endTime;
     private String duration;

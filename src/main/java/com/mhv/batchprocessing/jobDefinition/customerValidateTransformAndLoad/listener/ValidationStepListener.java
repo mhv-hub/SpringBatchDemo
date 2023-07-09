@@ -22,8 +22,14 @@ public class ValidationStepListener implements StepExecutionListener {
     @Autowired
     private KafkaProducerService kafkaProducerService;
 
+    @Value("#{stepExecution.jobExecution}")
+    private JobExecution jobExecution;
+
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
+        if(stepExecution.getExitStatus().getExitCode().equals(ExitStatus.FAILED.getExitCode())){
+            return stepExecution.getExitStatus();
+        }
         int retryCount = 3;
         Exception exception;
         do {
@@ -31,10 +37,10 @@ public class ValidationStepListener implements StepExecutionListener {
             retryCount--;
         } while (retryCount > 0 && exception != null);
         if(exception != null){
-            System.out.println("Publishing customer ctl event to kafka failed [ Error : " + exception.getMessage());
+            System.out.println("[ KEY : " + jobExecution.getJobParameters().getLong("jobKey") + " ] Publishing customer ctl event to kafka failed [ Error : " + exception.getMessage());
             return new ExitStatus(ExitStatus.FAILED.getExitCode(), "Customer data processing completed but kafka event publish failed [ Error : " + exception.getMessage() + " ]");
         }else{
-            System.out.println("Published the customer ctl event to kafka");
+            System.out.println("[ KEY : " + jobExecution.getJobParameters().getLong("jobKey") + " ] Published the customer ctl event to kafka");
             return new ExitStatus(ExitStatus.COMPLETED.getExitCode(), "Customer data processed and event published to kafka.");
         }
     }

@@ -34,16 +34,17 @@ public class CustomerController {
             throw new GeneralException("Invalid or no file provided");
         }
         String fileName = multipartFile.getOriginalFilename();
+        int key = 0;
         if(!fileName.endsWith(".csv")){
             throw new GeneralException("Please upload a valid CSV file");
         }else{
-            int randomNum = (int) (Math.random() * 9999) + 1;
-            fileName = "customerDataFile_" + randomNum + ".csv";
+            key = (int) (Math.random() * (9999 - 1000 + 1)) + 1000;
+            fileName = "customerDataFile_" + key + ".csv";
         }
         File filLocation = new ClassPathResource("customerData/").getFile();
         Path path = Paths.get(filLocation.getAbsolutePath() + File.separator + fileName);
         Files.copy(multipartFile.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-        JobStatusResponse jobStatusResponse = customerJobService.triggerCustomerValidationJob(fileName);
+        JobStatusResponse jobStatusResponse = customerJobService.triggerCustomerValidationJob(fileName, key);
         return ResponseEntity.status(jobStatusResponse.getResponseCode()).body(jobStatusResponse);
     }
 }

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @NoArgsConstructor
@@ -24,14 +25,17 @@ public class Customer {
     private String activeStatus;
 
     public StringBuilder toStringCsvFormat(){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String joiningDateString = this.joiningDate.format(formatter);
+        String dateOfBirthString = this.joiningDate.format(formatter);
         return new StringBuilder()
-                .append(this.getUniqueId()).append(",")
-                .append(this.getCustomerName()).append(",")
-                .append(this.getCustomerGender()).append(",")
-                .append(this.getCustomerDateOfBirth()).append(",")
-                .append(this.getCustomerType()).append(",")
-                .append(this.getLocation()).append(",")
-                .append(this.getJoiningDate()).append(",")
-                .append(this.getActiveStatus());
+                .append(this.uniqueId).append(",")
+                .append(this.customerName).append(",")
+                .append(this.customerGender).append(",")
+                .append(dateOfBirthString).append(",")
+                .append(this.customerType).append(",")
+                .append(this.location).append(",")
+                .append(joiningDateString).append(",")
+                .append(this.activeStatus);
     }
 }

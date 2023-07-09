@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,10 +34,14 @@ public class CustomerJobService {
     @Qualifier(value = "customerTransformAndLoadJobBean")
     private Job customerTransformationAndLoadJob;
 
-    public JobStatusResponse triggerCustomerValidationJob(String fileName) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+    @Autowired
+    private CustomerFileService customerFileService;
+
+    public JobStatusResponse triggerCustomerValidationJob(String fileName, int jobKey) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException, IOException {
         JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
         jobParametersBuilder.addLocalDateTime("startTime", LocalDateTime.now());
         jobParametersBuilder.addString("fileName", fileName);
+        jobParametersBuilder.addLong("jobKey", (long) jobKey);
         JobParameters jobParameters = jobParametersBuilder.toJobParameters();
         JobExecution jobExecution = jobLauncher.run(customerValidatorJob, jobParameters);
         while (jobExecution.isRunning()){}
@@ -46,10 +52,10 @@ public class CustomerJobService {
         long totalRecordCount = (long)jobExecution.getExecutionContext().get("totalRecordCount");
         long processedRecordCount = (long)jobExecution.getExecutionContext().get("processedRecordCount");
         long rejectedRecordCount = (long)jobExecution.getExecutionContext().get("rejectedRecordCount");
-        List<RejectedRecord> rejectedRecords = (List<RejectedRecord>) jobExecution.getExecutionContext().get("rejectedRecordList");
+        List<RejectedRecord> rejectedRecords = customerFileService.getRejectedRecordList(jobKey);
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss:SSS");
-        System.out.println("Validation job completed <<<<<<<<<<<<<<<<<<<<<<<");
-        return new JobStatusResponse(startTime.format(dateTimeFormatter), endTime.format(dateTimeFormatter), duration, exitStatus.getExitCode(), exitStatus.getExitDescription(), totalRecordCount, processedRecordCount, rejectedRecordCount, rejectedRecords, exitStatus.getExitCode().equals(ExitStatus.FAILED.getExitCode()) ? 500 : 200);
+        System.out.println("[ KEY : " + jobKey + " ] Validation job " + exitStatus.getExitCode() + " <<<<<<<<<<<<<<<<<<<<<<<");
+        return new JobStatusResponse(jobKey, startTime.format(dateTimeFormatter), endTime.format(dateTimeFormatter), duration, exitStatus.getExitCode(), exitStatus.getExitDescription(), totalRecordCount, processedRecordCount, rejectedRecordCount, rejectedRecords, exitStatus.getExitCode().equals(ExitStatus.FAILED.getExitCode()) ? 500 : 200);
     }
 
     public void triggerCustomerTransformationAndLoadJob() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {

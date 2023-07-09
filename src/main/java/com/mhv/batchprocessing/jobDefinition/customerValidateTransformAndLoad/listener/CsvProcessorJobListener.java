@@ -21,16 +21,17 @@ public class CsvProcessorJobListener implements JobExecutionListener {
     private ValidationSkipListener skipListener;
 
     @Override
-    public void beforeJob(JobExecution jobExecution) {
-        jobExecution.getExecutionContext().put("rejectedRecordList", new ArrayList<RejectedRecord>());
-    }
+    public void beforeJob(JobExecution jobExecution) {}
 
     @Override
     public void afterJob(JobExecution jobExecution) {
         StepExecution stepExecution = jobExecution.getStepExecutions().stream().filter(value -> value.getStepName().equals("customer-csv-processor")).findFirst().get();
-        jobExecution.getExecutionContext().put("totalRecordCount", stepExecution.getReadCount());
-        jobExecution.getExecutionContext().put("processedRecordCount", stepExecution.getWriteCount());
-        jobExecution.getExecutionContext().put("rejectedRecordCount", stepExecution.getReadSkipCount() + stepExecution.getProcessSkipCount() + stepExecution.getWriteSkipCount());
+        long totalRecordCount = stepExecution.getReadCount() + stepExecution.getReadSkipCount();
+        long rejectedRecordCount = stepExecution.getReadSkipCount() + stepExecution.getProcessSkipCount() + stepExecution.getWriteSkipCount();
+        long processedRecordCount = totalRecordCount - rejectedRecordCount;
+        jobExecution.getExecutionContext().put("totalRecordCount", totalRecordCount);
+        jobExecution.getExecutionContext().put("processedRecordCount", processedRecordCount);
+        jobExecution.getExecutionContext().put("rejectedRecordCount", rejectedRecordCount);
         jobExecution.setExitStatus(stepExecution.getExitStatus());
     }
 }
