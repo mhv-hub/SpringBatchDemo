@@ -60,12 +60,12 @@ public class ValidationSkipListener implements SkipListener<Customer, Customer> 
     private void writeRejectedRecordToFile(RejectedRecord record) {
         try {
             String rejectedRecordJson = new ObjectMapper().writeValueAsString(record);
-            System.out.println("================== [ KEY : " + jobExecution.getJobParameters().getLong("jobKey") + " ] Writing rejected record in file [ record : " + rejectedRecordJson + " ]");
+            System.out.println("[ Thread # " + Thread.currentThread().getName() + " ] =============== [ KEY : " + jobExecution.getJobParameters().getLong("jobKey") + " ] Writing rejected record in file [ record : " + rejectedRecordJson + " ]");
             bufferedWriter.write(rejectedRecordJson);
             bufferedWriter.newLine();
             bufferedWriter.flush();
         }catch (Exception e){
-            throw new RuntimeException("====================== [ KEY : " + jobExecution.getJobParameters().getLong("jobKey") + " ] Failed to write rejected record to file [ FileName : " + this.rejectFile);
+            throw new RuntimeException("[ Thread # " + Thread.currentThread().getName() + " ] =============== [ KEY : " + jobExecution.getJobParameters().getLong("jobKey") + " ] Failed to write rejected record to file [ FileName : " + this.rejectFile);
         }
     }
 }

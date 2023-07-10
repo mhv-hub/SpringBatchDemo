@@ -18,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 @SuppressWarnings({"ConstantConditions", "unchecked", "StatementWithEmptyBody"})
@@ -37,11 +38,11 @@ public class CustomerJobService {
     @Autowired
     private CustomerFileService customerFileService;
 
-    public JobStatusResponse triggerCustomerValidationJob(String fileName, int jobKey) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException, IOException {
+    public JobStatusResponse triggerCustomerValidationJob(String fileName, String jobKey) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException, IOException {
         JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
         jobParametersBuilder.addLocalDateTime("startTime", LocalDateTime.now());
         jobParametersBuilder.addString("fileName", fileName);
-        jobParametersBuilder.addLong("jobKey", (long) jobKey);
+        jobParametersBuilder.addLong("jobKey", Long.parseLong(jobKey));
         JobParameters jobParameters = jobParametersBuilder.toJobParameters();
         JobExecution jobExecution = jobLauncher.run(customerValidatorJob, jobParameters);
         while (jobExecution.isRunning()){}
@@ -55,15 +56,20 @@ public class CustomerJobService {
         List<RejectedRecord> rejectedRecords = customerFileService.getRejectedRecordList(jobKey);
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss:SSS");
         System.out.println("[ KEY : " + jobKey + " ] Validation job " + exitStatus.getExitCode() + " <<<<<<<<<<<<<<<<<<<<<<<");
-        return new JobStatusResponse(jobKey, startTime.format(dateTimeFormatter), endTime.format(dateTimeFormatter), duration, exitStatus.getExitCode(), exitStatus.getExitDescription(), totalRecordCount, processedRecordCount, rejectedRecordCount, rejectedRecords, exitStatus.getExitCode().equals(ExitStatus.FAILED.getExitCode()) ? 500 : 200);
+        return new JobStatusResponse(Long.parseLong(jobKey), startTime.format(dateTimeFormatter), endTime.format(dateTimeFormatter), duration, exitStatus.getExitCode(), exitStatus.getExitDescription(), totalRecordCount, processedRecordCount, rejectedRecordCount, rejectedRecords, exitStatus.getExitCode().equals(ExitStatus.FAILED.getExitCode()) ? 500 : 200);
     }
 
-    public void triggerCustomerTransformationAndLoadJob() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+    public void triggerCustomerTransformationAndLoadJob(String key) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
         jobParametersBuilder.addLocalDateTime("startTime", LocalDateTime.now());
+        jobParametersBuilder.addString("jobKey", key);
         JobParameters jobParameters = jobParametersBuilder.toJobParameters();
         JobExecution jobExecution = jobLauncher.run(customerTransformationAndLoadJob, jobParameters);
         while (jobExecution.isRunning()){}
         System.out.println("Transformation and Load Job Status : [ " + jobExecution.getStatus() + " ]");
+    }
+
+    public String getNewJobKey() {
+        return String.valueOf(new Random().nextInt(100) + 101);
     }
 }

@@ -33,7 +33,7 @@ public class ValidationStepListener implements StepExecutionListener {
         int retryCount = 3;
         Exception exception;
         do {
-            exception = kafkaProducerService.pushCustomerCtlToQueue(customerCtlTopic);
+            exception = kafkaProducerService.pushCustomerCtlToQueue(customerCtlTopic, String.valueOf(jobExecution.getJobParameters().getLong("jobKey")));
             retryCount--;
         } while (retryCount > 0 && exception != null);
         if(exception != null){

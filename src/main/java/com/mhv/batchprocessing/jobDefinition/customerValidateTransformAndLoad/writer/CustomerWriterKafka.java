@@ -33,7 +33,7 @@ public class CustomerWriterKafka implements ItemWriter<Customer> {
 
     @Override
     public void write(Chunk<? extends Customer> customers) throws Exception {
-        Exception exception = kafkaProducerService.pushCustomerDataToQueue(new ArrayList<>(customers.getItems()), customerDataTopic);
+        Exception exception = kafkaProducerService.pushCustomerDataToQueue(new ArrayList<>(customers.getItems()), String.valueOf(jobExecution.getJobParameters().getLong("jobKey")), customerDataTopic);
         System.out.println(
                 exception == null ?
                         "[ KEY : " + jobExecution.getJobParameters().getLong("jobKey") + " ] Customer data published to message queue [ " + LocalTime.now() + " ]" :

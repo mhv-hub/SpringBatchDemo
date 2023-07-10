@@ -14,7 +14,7 @@ import java.util.List;
 public class CustomerFileService {
 
 
-    public List<RejectedRecord> getRejectedRecordList(int jobKey) throws IOException {
+    public List<RejectedRecord> getRejectedRecordList(String jobKey) throws IOException {
         String rejectFileName = "customerRejectFile_" + jobKey + ".csv";
         String fileLocation = new ClassPathResource("customerRejectData/").getFile().getAbsolutePath();
         String rejectFile = fileLocation + File.separator + rejectFileName;

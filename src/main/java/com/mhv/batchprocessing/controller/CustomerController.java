@@ -34,11 +34,10 @@ public class CustomerController {
             throw new GeneralException("Invalid or no file provided");
         }
         String fileName = multipartFile.getOriginalFilename();
-        int key = 0;
+        String key = customerJobService.getNewJobKey();
         if(!fileName.endsWith(".csv")){
             throw new GeneralException("Please upload a valid CSV file");
         }else{
-            key = (int) (Math.random() * (9999 - 1000 + 1)) + 1000;
             fileName = "customerDataFile_" + key + ".csv";
         }
         File filLocation = new ClassPathResource("customerData/").getFile();

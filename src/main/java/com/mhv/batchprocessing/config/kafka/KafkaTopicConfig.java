@@ -15,13 +15,16 @@ public class KafkaTopicConfig {
     @Value("${kafka.csv.topic.customer_ctl}")
     private String customerCtlTopic;
 
+    @Value("${kafka.customer.topic.partition.count}")
+    private int partitionCount;
+
     @Bean
     public NewTopic createCustomerDataTopic(){
-        return TopicBuilder.name(customerDataTopic).partitions(10).build();
+        return TopicBuilder.name(customerDataTopic).partitions(partitionCount).build();
     }
 
     @Bean
     public NewTopic createCustomerCtlTopic(){
-        return TopicBuilder.name(customerCtlTopic).partitions(10).build();
+        return TopicBuilder.name(customerCtlTopic).partitions(partitionCount).build();
     }
 }
