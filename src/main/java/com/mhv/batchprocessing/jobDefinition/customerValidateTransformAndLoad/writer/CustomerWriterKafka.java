@@ -2,6 +2,8 @@ package com.mhv.batchprocessing.jobDefinition.customerValidateTransformAndLoad.w
 
 import com.mhv.batchprocessing.entity.Customer;
 import com.mhv.batchprocessing.service.kafka.KafkaProducerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.Chunk;
@@ -31,13 +33,19 @@ public class CustomerWriterKafka implements ItemWriter<Customer> {
     @Value("#{stepExecution.jobExecution}")
     private JobExecution jobExecution;
 
+    private final Logger logger;
+
+    public CustomerWriterKafka(){
+        this.logger = LoggerFactory.getLogger(CustomerWriterKafka.class);
+    }
+
     @Override
     public void write(Chunk<? extends Customer> customers) throws Exception {
         Exception exception = kafkaProducerService.pushCustomerDataToQueue(new ArrayList<>(customers.getItems()), String.valueOf(jobExecution.getJobParameters().getLong("jobKey")), customerDataTopic);
-        System.out.println(
-                exception == null ?
-                        "[ KEY : " + jobExecution.getJobParameters().getLong("jobKey") + " ] Customer data published to message queue [ " + LocalTime.now() + " ]" :
-                        "[ KEY : " + jobExecution.getJobParameters().getLong("jobKey") + " ] Issue in pushing customer data to message queue : [ " + LocalTime.now() + " ] [ " + exception.getMessage() + " ]"
-        );
+        if(exception == null){
+            logger.info("[ KEY : " + jobExecution.getJobParameters().getLong("jobKey") + " ] Customer data published to message queue [ " + LocalTime.now() + " ]");
+        }else{
+            logger.info("[ KEY : " + jobExecution.getJobParameters().getLong("jobKey") + " ] Issue in pushing customer data to message queue : [ " + LocalTime.now() + " ] [ " + exception.getMessage() + " ]");
+        }
     }
 }

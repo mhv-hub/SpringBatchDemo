@@ -3,6 +3,7 @@ package com.mhv.batchprocessing.service.customer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mhv.batchprocessing.dto.RejectedRecord;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +14,12 @@ import java.util.List;
 @Service
 public class CustomerFileService {
 
+    @Value("${customer.file.location.reject}")
+    private String customerRejectDataLocation;
 
     public List<RejectedRecord> getRejectedRecordList(String jobKey) throws IOException {
         String rejectFileName = "customerRejectFile_" + jobKey + ".csv";
-        String fileLocation = new ClassPathResource("customerRejectData/").getFile().getAbsolutePath();
-        String rejectFile = fileLocation + File.separator + rejectFileName;
+        String rejectFile = customerRejectDataLocation + File.separator + rejectFileName;
         File file = new File(rejectFile);
         List<RejectedRecord> rejectedRecordList = new ArrayList<>();
         if(!file.exists()) return rejectedRecordList;

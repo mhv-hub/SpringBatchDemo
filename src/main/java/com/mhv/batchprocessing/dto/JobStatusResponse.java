@@ -24,4 +24,8 @@ public class JobStatusResponse {
     private long rejectedRecordCount;
     private List<RejectedRecord> rejectedRecords;
     private int responseCode;
+
+    public JobStatusResponse(String message){
+        this.exitMessage = message;
+    }
 }

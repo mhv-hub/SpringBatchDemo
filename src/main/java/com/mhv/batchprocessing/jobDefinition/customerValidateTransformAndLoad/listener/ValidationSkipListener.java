@@ -30,10 +30,9 @@ public class ValidationSkipListener implements SkipListener<Customer, Customer> 
     private final BufferedWriter bufferedWriter;
     private String rejectFile;
 
-    public ValidationSkipListener(@Value("#{jobParameters[jobKey]}") String jobKey) throws IOException {
+    public ValidationSkipListener(@Value("#{jobParameters[jobKey]}") String jobKey, @Value("${customer.file.location.reject}") String customerRejectDataLocation) throws IOException {
         String rejectFileName = "customerRejectFile_" + jobKey + ".csv";
-        String fileLocation = new ClassPathResource("customerRejectData/").getFile().getAbsolutePath();
-        String rejectFile = fileLocation + File.separator + rejectFileName;
+        String rejectFile = customerRejectDataLocation + File.separator + rejectFileName;
         this.bufferedWriter = new BufferedWriter(new FileWriter(rejectFile, true));
     }
 

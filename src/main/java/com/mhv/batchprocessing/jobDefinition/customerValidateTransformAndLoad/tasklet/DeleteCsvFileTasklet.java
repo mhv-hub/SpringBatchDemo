@@ -25,6 +25,9 @@ public class DeleteCsvFileTasklet implements Tasklet {
     @Value("#{stepExecution.jobExecution}")
     private JobExecution jobExecution;
 
+    @Value("${customer.file.location.data}")
+    private String customerRejectData;
+
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         String fileName = chunkContext.getStepContext().getJobParameters().get("fileName").toString();
@@ -38,8 +41,7 @@ public class DeleteCsvFileTasklet implements Tasklet {
     }
 
     private void runCustomMethod(String fileName) throws IOException {
-        File fileLocation = new ClassPathResource("customerData/").getFile();
-        Path path = Paths.get(fileLocation.getAbsolutePath() + File.separator + fileName);
+        Path path = Paths.get(customerRejectData + File.separator + fileName);
         Files.delete(path);
     }
 }

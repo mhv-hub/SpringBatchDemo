@@ -15,19 +15,25 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Component
 public class CustomerReaderCsv {
 
+    @Value("${customer.file.location.data}")
+    private String customerDataLocation;
+
     @Bean(name = "customerCsvFileReader")
     @StepScope
-    public FlatFileItemReader<Customer> itemReader(@Value("#{jobParameters[fileName]}") String fileName){
+    public FlatFileItemReader<Customer> itemReader(@Value("#{jobParameters[fileName]}") String fileName) throws MalformedURLException {
         FlatFileItemReader<Customer> flatFileItemReader = new FlatFileItemReader<>();
-        flatFileItemReader.setResource(new ClassPathResource("customerData/" + fileName));
+        flatFileItemReader.setResource(new UrlResource(new File(customerDataLocation + File.separator + fileName).toURI()));
         flatFileItemReader.setName("csvFileReader");
         flatFileItemReader.setLinesToSkip(1);
         flatFileItemReader.setLineMapper(lineMapper());
